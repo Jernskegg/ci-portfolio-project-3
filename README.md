@@ -29,6 +29,14 @@ as a user I want to play a game of logic.
    
 # Technology
 
+  ## python
+  Python is a easy and basic programming language, but it is powerfull with the use libraries to bring out capabilities to use in multiple applications of use.
+
+  ## google spreadsheet
+  Google speadsheets is a calculus applications offered by google where you can make speadsheets, charts and advanced caluclations
+
+  in this project Googlespeadsheet is used for the battlemaps, There is probably a better way but I want to incorperate the spreadsheet for the manipulation of a realworld situation where python would need a spreadsheet to manipulate.
+
 # testing
 
    ## code validation

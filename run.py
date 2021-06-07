@@ -22,7 +22,7 @@ def game():
     dificulty = 10
     enemy_ship_pos = enemy_ship(dificulty)
     if enemy_ship_pos == guess():
-        print("HIT!")
+        print("HIT!")  
     else:
         print(f"MISS! enemy ship was at {enemy_ship_pos}")
 
