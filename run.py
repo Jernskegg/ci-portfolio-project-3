@@ -2,6 +2,22 @@
 # guess round Game
 # main
 import random
+import gspread
+from google.oauth2.service_account import Credentials
+
+# Authentication for google drive API and
+# allows python to access the google spreadsheet
+SCOPE = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive"
+    ]
+
+CREDS = Credentials.from_service_account_file('creds.json')
+SCOPED_CREDS = CREDS.with_scopes(SCOPE)
+GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
+SHEET = GSPREAD_CLIENT.open('PROJECT3GAME')
+# end of authoratization
 
 
 def enemy_ship(dificulty):
@@ -22,9 +38,9 @@ def game():
     dificulty = 10
     enemy_ship_pos = enemy_ship(dificulty)
     if enemy_ship_pos == guess():
-        print("HIT!")  
+        print("HIT!")
     else:
         print(f"MISS! enemy ship was at {enemy_ship_pos}")
 
 
-game()
+# game()
