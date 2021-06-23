@@ -1,6 +1,3 @@
-# Random number generetor
-# guess round Game
-# main
 import random
 import gspread
 from google.oauth2.service_account import Credentials
@@ -18,6 +15,13 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('PROJECT3GAME')
 # end of authoratization
+
+
+def battle_sheet():
+    sheet_number = str(random.randint(1, 10))
+    newsheet = SHEET.add_worksheet(title=sheet_number, rows="10", cols="10")
+    Check_if_sheet_exists = input("succes: ")
+    SHEET.del_worksheet(newsheet)
 
 
 def enemy_ship(dificulty):
@@ -42,5 +46,7 @@ def game():
     else:
         print(f"MISS! enemy ship was at {enemy_ship_pos}")
 
+
+battle_sheet()
 
 # game()
