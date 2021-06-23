@@ -18,9 +18,23 @@ SHEET = GSPREAD_CLIENT.open('PROJECT3GAME')
 
 
 def battle_sheet():
-    sheet_number = str(random.randint(1, 10))
-    newsheet = SHEET.add_worksheet(title=sheet_number, rows="10", cols="10")
+    tries = 5
+    check_available_sheet = False
+    while check_available_sheet is False and tries > 0:
+        try:
+            sheet_number = str(random.randint(1, 1))
+            newsheet = SHEET.add_worksheet(title=sheet_number,
+                                           rows="10", cols="10")
+            check_available_sheet = True
+        except Exception:
+            if tries > 1:
+                tries = tries - 1
+            else:
+                print("No battlesheet available! please try again later.")
+                quit()
     Check_if_sheet_exists = input("succes: ")
+    print(check_available_sheet)
+    print(Check_if_sheet_exists)
     SHEET.del_worksheet(newsheet)
 
 
