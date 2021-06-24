@@ -27,8 +27,8 @@ def battle_sheet():
                                               rows="10", cols="10")
             check_available_sheet = True
         except Exception:
-            if tries > 1:
-                tries = tries - 1
+            if tries > 5:
+                tries += 1
             else:
                 print("No battlesheet available! please try again later.")
                 quit()
@@ -36,13 +36,16 @@ def battle_sheet():
 
 
 def enemy_ship():
-    enemy_ship_row = random.randint(1, 10)
-    enemy_ship_col = random.randint(1, 10)
-    enemy_ship_pos = [enemy_ship_row, enemy_ship_col]
     enemysheet = battle_sheet()
-    enemysheet.update_cell(enemy_ship_pos[0],
-                           enemy_ship_pos[1], 'x')
-    print(enemysheet)
+    number_of_ships = 0
+    while number_of_ships < 3:
+        enemy_ship_row = random.randint(1, 10)
+        enemy_ship_col = random.randint(1, 10)
+        enemy_ship_pos = [enemy_ship_row, enemy_ship_col]
+        enemysheet.update_cell(enemy_ship_pos[0],
+                            enemy_ship_pos[1], 'x')
+        number_of_ships += 1
+        print(enemysheet)
     return enemysheet
 
 
