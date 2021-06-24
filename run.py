@@ -23,8 +23,8 @@ def battle_sheet():
     while check_available_sheet is False and tries > 0:
         try:
             sheet_number = str(random.randint(1, 1))
-            newsheet = SHEET.add_worksheet(title=sheet_number,
-                                           rows="10", cols="10")
+            battlesheet = SHEET.add_worksheet(title=sheet_number,
+                                              rows="10", cols="10")
             check_available_sheet = True
         except Exception:
             if tries > 1:
@@ -32,17 +32,18 @@ def battle_sheet():
             else:
                 print("No battlesheet available! please try again later.")
                 quit()
-    Check_if_sheet_exists = input("succes: ")
-    print(check_available_sheet)
-    print(Check_if_sheet_exists)
-    SHEET.del_worksheet(newsheet)
+    return battlesheet
 
 
-def enemy_ship(dificulty):
-    enemy_ship_row = random.randint(1, dificulty)
-    enemy_ship_col = random.randint(1, dificulty)
+def enemy_ship():
+    enemy_ship_row = random.randint(1, 10)
+    enemy_ship_col = random.randint(1, 10)
     enemy_ship_pos = [enemy_ship_row, enemy_ship_col]
-    return enemy_ship_pos
+    enemysheet = battle_sheet()
+    enemysheet.update_cell(enemy_ship_pos[0],
+                           enemy_ship_pos[1], 'x')
+    print(enemysheet)
+    return enemysheet
 
 
 def guess():
@@ -53,14 +54,18 @@ def guess():
 
 
 def game():
-    dificulty = 10
-    enemy_ship_pos = enemy_ship(dificulty)
+    enemy_ship_pos = enemy_ship()
     if enemy_ship_pos == guess():
         print("HIT!")
     else:
         print(f"MISS! enemy ship was at {enemy_ship_pos}")
 
 
-battle_sheet()
+def main():
+    enemysheet = enemy_ship()
+    Check_if_sheet_exists = input("succes: ")
+    print(Check_if_sheet_exists)
+    SHEET.del_worksheet(enemysheet)
 
-# game()
+
+main()
