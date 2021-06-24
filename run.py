@@ -18,6 +18,11 @@ SHEET = GSPREAD_CLIENT.open('PROJECT3GAME')
 
 
 def battle_sheet():
+    try:
+        del_sheet = SHEET.worksheet('1')
+        SHEET.del_worksheet(del_sheet)
+    except gspread.exceptions.WorksheetNotFound:
+        print('sheet "1" not found')
     tries = 5
     check_available_sheet = False
     while check_available_sheet is False and tries > 0:
@@ -35,10 +40,10 @@ def battle_sheet():
     return battlesheet
 
 
-def enemy_ship():
+def enemy_ship(total_ships):
     enemysheet = battle_sheet()
     number_of_ships = 0
-    while number_of_ships < 3:
+    while number_of_ships < total_ships:
         enemy_ship_row = random.randint(1, 10)
         enemy_ship_col = random.randint(1, 10)
         enemy_ship_pos = [enemy_ship_row, enemy_ship_col]
@@ -56,23 +61,34 @@ def guess():
     return guessed_answered
 
 
-def game():
-    enemy_ship_pos = enemy_ship()
-    if enemy_ship_pos == guess():
-        print("HIT!")
-    else:
-        print(f"MISS! enemy ship was at {enemy_ship_pos}")
-
+def game(total_ships, enemysheet):
+    game_total_ships = total_ships
+    while game_total_ships != 0:
+        user_guess = guess()
+        print(user_guess)
+        guess_try = enemysheet.cell(user_guess[0], 
+                                    user_guess[1]).value
+        if guess_try == "x":
+            print("HIT!")
+            game_total_ships -=1
+            print(f"{game_total_ships} left!")
+            enemysheet.update_cell(user_guess[0], user_guess[1], 'o')
+        elif guess_try == "o":
+            print("You allready fired upon this coordinates, try another one.")
+        else:
+            print("MISS!")
+            enemysheet.update_cell(user_guess[0],user_guess[1] , 'o')
+    print("Loop complete")
 def exit_game(sheet1,sheet2):
     SHEET.del_worksheet(sheet1)
     # SHEET.del_worksheet(sheet2)
     
 
 def main():
-    empty = "empty"
-    enemysheet = enemy_ship()
-    Check_if_sheet_exists = input("succes: ")
-    print(Check_if_sheet_exists)
+    total_ships = 3
+    empty = "empty" # just for now
+    enemysheet = enemy_ship(total_ships)
+    game(total_ships, enemysheet)
     exit_game(enemysheet,empty)
     
 
