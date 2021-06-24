@@ -63,12 +63,18 @@ def game():
     else:
         print(f"MISS! enemy ship was at {enemy_ship_pos}")
 
+def exit_game(sheet1,sheet2):
+    SHEET.del_worksheet(sheet1)
+    # SHEET.del_worksheet(sheet2)
+    
 
 def main():
+    empty = "empty"
     enemysheet = enemy_ship()
     Check_if_sheet_exists = input("succes: ")
     print(Check_if_sheet_exists)
-    SHEET.del_worksheet(enemysheet)
+    exit_game(enemysheet,empty)
+    
 
 
 main()
