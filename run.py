@@ -23,6 +23,7 @@ def battle_sheet():
         SHEET.del_worksheet(del_sheet)
     except gspread.exceptions.WorksheetNotFound:
         print('sheet "1" not found')
+    # REMOVE ABOVE!!!!!!!!
     tries = 5
     check_available_sheet = False
     while check_available_sheet is False and tries > 0:
@@ -48,16 +49,26 @@ def enemy_ship(total_ships):
         enemy_ship_col = random.randint(1, 10)
         enemy_ship_pos = [enemy_ship_row, enemy_ship_col]
         enemysheet.update_cell(enemy_ship_pos[0],
-                            enemy_ship_pos[1], 'x')
+                               enemy_ship_pos[1], 'o')
         number_of_ships += 1
         print(enemysheet)
     return enemysheet
 
 
 def guess():
-    guess_row = input("Make your guess! \nRow: ")
-    guess_col = input("Collumn: ")
-    guessed_answered = [int(guess_row), int(guess_col)]
+    while True:
+        try:
+            guess_row = input("Make your guess! \nRow: ")
+            if int(guess_row) > 10 or int(guess_row) < 0:
+                raise ValueError("number out of range")
+            guess_col = input("Collumn: ")
+            if int(guess_col) > 10 or int(guess_col) < 0:
+                raise ValueError("number out of range")
+            guessed_answered = [int(guess_row), int(guess_col)]
+            break
+        except ValueError as error:
+            print(f"Unkown input:{error}")
+            print("please provide a number between 1 and 10.")
     return guessed_answered
 
 
@@ -66,31 +77,32 @@ def game(total_ships, enemysheet):
     while game_total_ships != 0:
         user_guess = guess()
         print(user_guess)
-        guess_try = enemysheet.cell(user_guess[0], 
+        guess_try = enemysheet.cell(user_guess[0],
                                     user_guess[1]).value
-        if guess_try == "x":
+        if guess_try == "o":
             print("HIT!")
-            game_total_ships -=1
+            game_total_ships -= 1
             print(f"{game_total_ships} left!")
-            enemysheet.update_cell(user_guess[0], user_guess[1], 'o')
-        elif guess_try == "o":
+            enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
+        elif guess_try == "x":
             print("You allready fired upon this coordinates, try another one.")
         else:
             print("MISS!")
-            enemysheet.update_cell(user_guess[0],user_guess[1] , 'o')
+            enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
     print("Loop complete")
-def exit_game(sheet1,sheet2):
+
+
+def exit_game(sheet1, sheet2):
     SHEET.del_worksheet(sheet1)
     # SHEET.del_worksheet(sheet2)
-    
+
 
 def main():
     total_ships = 3
-    empty = "empty" # just for now
+    empty = "empty"  # just for now
     enemysheet = enemy_ship(total_ships)
     game(total_ships, enemysheet)
-    exit_game(enemysheet,empty)
-    
+    exit_game(enemysheet, empty)
 
 
 main()
