@@ -50,7 +50,7 @@ def enemy_ship(total_ships):
 
 
 def initiate_player(total_ships):
-    game_total_ships = 3
+    game_total_ships = total_ships
     playersheet = battle_sheet()
     while game_total_ships != 0:
         position = shoot("placement")
@@ -58,7 +58,7 @@ def initiate_player(total_ships):
         guess_try = playersheet.cell(position[0],
                                      position[1]).value
         if guess_try is None:
-            playersheet.update_cell(position[0], position[1], 'x')
+            playersheet.update_cell(position[0], position[1], 'o')
             game_total_ships -= 1
         else:
             print("You have allready positioned a ship here, Try another one")
@@ -82,9 +82,32 @@ def shoot(text):
     return guessed_answered
 
 
-def game(total_ships, enemysheet):
+def enemy_guess(playersheet):
+    print("Computers turn")
+
+    while True:
+        computer_row = random.randint(1, 10)
+        computer_col = random.randint(1, 10)
+        computer_guess = [computer_row, computer_col]
+        guess_try = playersheet.cell(computer_guess[0],
+                                     computer_guess[1]).value
+        print()
+        if guess_try == "o":
+            print("ENEMY HIT!")
+            playersheet.update_cell(computer_guess[0], computer_guess[1], 'x')
+            return True
+        elif guess_try == "x":
+            continue
+        else:
+            print("ENEMY MISSED!")
+            playersheet.update_cell(computer_guess[0], computer_guess[1], 'x')
+            break
+
+
+def game(total_ships, enemysheet, playersheet):
     game_total_ships = total_ships
-    while game_total_ships != 0:
+    game_player_ships = total_ships
+    while game_total_ships != 0 or game_player_ships != 3:
         user_guess = shoot("guess")
         print(user_guess)
         guess_try = enemysheet.cell(user_guess[0],
@@ -94,12 +117,21 @@ def game(total_ships, enemysheet):
             game_total_ships -= 1
             print(f"{game_total_ships} left!")
             enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
-        elif guess_try == "":
+        elif guess_try == "x":
             print("You allready fired upon this coordinates, try another one.")
+            continue
         else:
             print("MISS!")
             enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
-    print("You win!")
+        enemy_guess_val = enemy_guess(playersheet)
+        if enemy_guess_val is True:
+            game_player_ships -= 1
+            enemy_guess_val = False
+        if game_total_ships == 0:
+            print("You win!")
+        if game_player_ships == 0:
+            print("You Lose")
+    enemy_guess(playersheet)
 
 
 def exit_game(sheet1, sheet2):
@@ -111,7 +143,7 @@ def main():
     total_ships = 3
     playersheet = initiate_player(total_ships)
     enemysheet = enemy_ship(total_ships)
-    game(total_ships, enemysheet)
+    game(total_ships, enemysheet, playersheet)
     exit_game(enemysheet, playersheet)
 
 
