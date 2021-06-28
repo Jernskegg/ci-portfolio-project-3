@@ -18,6 +18,10 @@ SHEET = GSPREAD_CLIENT.open('PROJECT3GAME')
 
 
 def battle_sheet():
+    """
+    Function creates a 10x10 cell worksheet
+    and checks if sheets are not used by other users.
+    """
     tries = 5
     while tries > 0:
         try:
@@ -35,6 +39,9 @@ def battle_sheet():
 
 
 def enemy_ship(total_ships):
+    """
+    This initilizes the poisitioning of the computer controlled player
+    """
     enemysheet = battle_sheet()
     number_of_ships = 0
     while number_of_ships < total_ships:
@@ -48,6 +55,9 @@ def enemy_ship(total_ships):
 
 
 def initiate_player(total_ships):
+    """
+    This Function allows the user to input their ships to the battle sheet
+    """
     game_enemy_ships = total_ships
     playersheet = battle_sheet()
     while game_enemy_ships != 0:
@@ -64,6 +74,11 @@ def initiate_player(total_ships):
 
 
 def shoot(text):
+    """
+    This function allows the user to make a guess and validates it to confine
+    it to a number between 1 to 10,
+    and returns an error to the user, So that the user can try again.
+    """
     while True:
         try:
             guess_row = input(f"Make your {text}! \nRow: ")
@@ -81,6 +96,11 @@ def shoot(text):
 
 
 def enemy_guess(playersheet):
+    """
+    This function calls the Computer to make a random guess.
+    It will return a "True"
+    if the computer guess matches with the players ship on the worksheet
+    """
     print("\nComputers turn")
 
     while True:
@@ -102,6 +122,13 @@ def enemy_guess(playersheet):
 
 
 def player_guess(enemysheet):
+    """
+    This function takes the users input and compares it to the enemy worksheet
+    to see if the guess corresponds to the sheet with eiter returning
+    "None, X(Previous hit), o(Enemy ship)
+    It will return a "True"
+    if the user guess matches with an enemy ship on the worksheet
+    """
     print("\nIt's your turn")
     while True:
         user_guess = shoot("guess")
@@ -122,6 +149,9 @@ def player_guess(enemysheet):
 
 
 def game(total_ships, enemysheet, playersheet):
+    """
+    This function compares the values from total ships and reduces
+    """
     game_enemy_ships = total_ships
     game_player_ships = total_ships
     game_over = False
@@ -153,6 +183,10 @@ def game(total_ships, enemysheet, playersheet):
 
 
 def exit_game(sheet1, sheet2):
+    """
+    This function will clean up by removing
+    the worksheets to make them available for other users.
+    """
     SHEET.del_worksheet(sheet1)
     SHEET.del_worksheet(sheet2)
 
