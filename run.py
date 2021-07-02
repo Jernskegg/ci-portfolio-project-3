@@ -127,10 +127,13 @@ def shoot(text):
     """
     while True:
         try:
-            guess_row = input(f"Make your {text}! \nRow: ")
+            print(f"Make your {text}!")
+            print("Row:")
+            guess_row = input("")
             if int(guess_row) > 10 or int(guess_row) < 1:
                 raise ValueError("number out of range")
-            guess_col = input("Collumn: ")
+            print("Collumn:")
+            guess_col = input("")
             if int(guess_col) > 10 or int(guess_col) < 1:
                 raise ValueError("number out of range")
             guessed_answered = [int(guess_row), int(guess_col)]
