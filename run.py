@@ -37,9 +37,12 @@ def battle_sheet():
     tries = 5
     while tries > 0:
         try:
-            sheet_number = str(random.randint(1, 1))
-            battlesheet = SHEET.add_worksheet(title=sheet_number,
-                                              rows="10", cols="10")
+            battlesheet = SHEET.duplicate_sheet(0,
+                                                new_sheet_name=str(random.
+                                                                   randint(1,
+                                                                           10)
+                                                                   )
+                                                )
             break
         except gspread.exceptions.APIError:
             if tries > 1:
@@ -51,17 +54,26 @@ If this keeps happening, please contact {ADMIN_URL}""")
     return battlesheet
 
 
-def table(sheet):
+def table(sheet, hidden):
+    """
+    Shows a table in the console.
+    """
     def fixed_length(text, length):
         if len(text) > length:
             text = text[:length]
         elif len(text) < length:
             text = (text + " " * length)[:length]
         return text
+    tablesheet = sheet.get_all_values()
+    if hidden is True:
+        for step_1, x in enumerate(tablesheet):
+            for step_2, a in enumerate(x):
+                if "o" in a:
+                    tablesheet[step_1][step_2] = a.replace("o", " ")
 
     row_number = 1
     print("0__|_1_|_2_|_3_|_4_|_5_|_6_|_7_|_8_|_9_|_10|")
-    for row in sheet:
+    for row in tablesheet:
         val_print = f"{row_number}__"[:3]
         print(val_print, end="|")
         row_number += 1
@@ -94,11 +106,12 @@ def initiate_player(total_ships):
     game_enemy_ships = total_ships
     playersheet = battle_sheet()
     while game_enemy_ships != 0:
+        table(playersheet, False)
         position = shoot("placement")
         print(position)
         guess_try = playersheet.cell(position[0],
                                      position[1]).value
-        if guess_try is None:
+        if guess_try is None or guess_try == " ":
             playersheet.update_cell(position[0], position[1], 'o')
             game_enemy_ships -= 1
         else:
@@ -199,18 +212,19 @@ def game(total_ships, enemysheet, playersheet):
             print("You win!")
             game_over = True
             break
+        table(enemysheet, True)
         player_guess_val = player_guess(enemysheet)
         if game_player_ships == 0:
             print("You Lose")
             game_over = True
             break
+        table(playersheet, False)
         enemy_guess_val = enemy_guess(playersheet)
 
 
 def exit_game(sheet1, sheet2):
     """
-    This function will clean up by removing
-    the worksheets to make them available for other users.
+    cleans up the worksheets to make them available for other users.
     """
     SHEET.del_worksheet(sheet1)
     SHEET.del_worksheet(sheet2)
