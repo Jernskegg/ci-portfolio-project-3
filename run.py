@@ -1,3 +1,7 @@
+"""
+Import
+"""
+import sys
 import random
 import gspread
 from google.oauth2.service_account import Credentials
@@ -9,11 +13,19 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
     ]
-
+ADMIN_URL = "https://forms.gle/9mXCHJ2tEUNvyQyz8"
+# Testing if Creds are valid
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
-SHEET = GSPREAD_CLIENT.open('PROJECT3GAME')
+try:
+    SHEET = GSPREAD_CLIENT.open('PROJECT3GAME')
+except gspread.exceptions.SpreadsheetNotFound:
+    print(f"""A fancy unexpected error occured
+Please contact the admin on
+"{ADMIN_URL}"
+and tell the spreadsheet is missing""")
+    sys.exit()
 # end of authoratization
 
 
@@ -25,17 +37,38 @@ def battle_sheet():
     tries = 5
     while tries > 0:
         try:
-            sheet_number = str(random.randint(1, 10))
+            sheet_number = str(random.randint(1, 1))
             battlesheet = SHEET.add_worksheet(title=sheet_number,
                                               rows="10", cols="10")
             break
-        except Exception:
+        except gspread.exceptions.APIError:
             if tries > 1:
                 tries -= 1
             else:
-                print("No battlesheet available! please try again later.")
-                quit()
+                print(f"""No battlesheet available! please try again later.
+If this keeps happening, please contact {ADMIN_URL}""")
+                sys.exit()
     return battlesheet
+
+
+def table(sheet):
+    def fixed_length(text, length):
+        if len(text) > length:
+            text = text[:length]
+        elif len(text) < length:
+            text = (text + " " * length)[:length]
+        return text
+
+    row_number = 1
+    print("0__|_1_|_2_|_3_|_4_|_5_|_6_|_7_|_8_|_9_|_10|")
+    for row in sheet:
+        val_print = f"{row_number}__"[:3]
+        print(val_print, end="|")
+        row_number += 1
+        for collumn in row:
+            print(end="_")
+            print(fixed_length(collumn, 1), end="_|")
+        print()
 
 
 def enemy_ship(total_ships):
@@ -112,13 +145,12 @@ def enemy_guess(playersheet):
             print("ENEMY HIT!")
             playersheet.update_cell(computer_guess[0], computer_guess[1], 'x')
             return True
-        elif guess_try == "x":
+        if guess_try == "x":
             continue
-        else:
-            print(f"enemy guessed {computer_guess}")
-            print("ENEMY MISSED!")
-            playersheet.update_cell(computer_guess[0], computer_guess[1], 'x')
-            break
+        print(f"enemy guessed {computer_guess}")
+        print("ENEMY MISSED!")
+        playersheet.update_cell(computer_guess[0], computer_guess[1], 'x')
+        break
 
 
 def player_guess(enemysheet):
@@ -139,13 +171,12 @@ def player_guess(enemysheet):
             print("YOU HIT!")
             enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
             return True
-        elif guess_try == "x":
+        if guess_try == "x":
             print("You allready fired upon this coordinates, try another one.")
             continue
-        else:
-            print("YOU MISS!")
-            enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
-            break
+        print("YOU MISS!")
+        enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
+        break
 
 
 def game(total_ships, enemysheet, playersheet):
@@ -157,29 +188,23 @@ def game(total_ships, enemysheet, playersheet):
     game_over = False
     player_guess_val = False
     enemy_guess_val = False
-
     while game_over is False:
         if player_guess_val is True:
             game_enemy_ships -= 1
             player_guess_val = False
-
         if enemy_guess_val is True:
             game_player_ships -= 1
             enemy_guess_val = False
-
         if game_enemy_ships == 0:
             print("You win!")
             game_over = True
             break
-        else:
-            player_guess_val = player_guess(enemysheet)
-
+        player_guess_val = player_guess(enemysheet)
         if game_player_ships == 0:
             print("You Lose")
             game_over = True
             break
-        else:
-            enemy_guess_val = enemy_guess(playersheet)
+        enemy_guess_val = enemy_guess(playersheet)
 
 
 def exit_game(sheet1, sheet2):
@@ -192,6 +217,9 @@ def exit_game(sheet1, sheet2):
 
 
 def main():
+    """
+    Main part of the application
+    """
     total_ships = 3
     playersheet = initiate_player(total_ships)
     enemysheet = enemy_ship(total_ships)
