@@ -55,7 +55,11 @@ as a user I want to play a game of logic.
     
     Implemented a worksheet creation function with detection if that id is already in use, in case it is being used it tries a new id.
   
-  * These is an issue if too many users use the application it will halt due to it sending to many http calls to the api and stop application.
+  * There is an issue if too many users use the application it will halt due to it sending to many http calls to the api and stop application.
+
+  * Ship could be overwritten by enemy on his sheet resulting in a loss since you cant destroy the amount of predetermed ships
+
+  * heroku + CI console template does not like newlines(\n) , putting new lines into seperate Print statements works.
 
 # Deployment
    ## via gitpod
