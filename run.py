@@ -31,8 +31,7 @@ and tell the spreadsheet is missing""")
 
 def battle_sheet():
     """
-    Function creates a 10x10 cell worksheet
-    and checks if sheets are not used by other users.
+    Create a battlesheet and checks if sheets are not used by other users.
     """
     tries = 5
     while tries > 0:
@@ -99,23 +98,69 @@ def enemy_ship(total_ships):
     return enemysheet
 
 
+def ship_rotation():
+    while True:
+        print("Vertically or horizontally?")
+        vertical = (input("").lower().strip())
+        if vertical == "v":
+            return True
+        if vertical == "h":
+            return False
+        else:
+            print("Invalid input: please enter vertical or horisontal (v/h)")
+            continue
+
+
 def initiate_player(total_ships):
     """
-    This Function allows the user to input their ships to the battle sheet
+    Initializes the by letting the user put position their ships
     """
-    game_enemy_ships = total_ships
+    init_ships = total_ships
     playersheet = battle_sheet()
-    while game_enemy_ships != 0:
+    while init_ships != 0:
         table(playersheet, False)
         position = shoot("placement")
-        print(position)
-        guess_try = playersheet.cell(position[0],
-                                     position[1]).value
-        if guess_try is None or guess_try == " ":
-            playersheet.update_cell(position[0], position[1], 'o')
-            game_enemy_ships -= 1
-        else:
-            print("You have allready positioned a ship here, Try another one")
+        vertical = ship_rotation()
+        try:
+            if vertical is True:
+                pos1 = playersheet.cell(position[0],
+                                        position[1]).value
+                pos2 = playersheet.cell(position[0]+1,
+                                        position[1]).value
+                pos3 = playersheet.cell(position[0]+2,
+                                        position[1]).value
+                if pos1 == " " and pos2 == " " and pos3 == " ":
+                    playersheet.update_cell(position[0],
+                                            position[1], 'o')
+                    playersheet.update_cell(position[0]+1,
+                                            position[1], 'o')
+                    playersheet.update_cell(position[0]+2,
+                                            position[1], 'o')
+                    init_ships -= 1
+                else:
+                    print("You have allready positioned a ship here",
+                          "Try another one")
+            else:
+                pos1 = playersheet.cell(position[0],
+                                        position[1]).value
+                pos2 = playersheet.cell(position[0],
+                                        position[1]+1).value
+                pos3 = playersheet.cell(position[0],
+                                        position[1]+2).value
+                if pos1 == " " and pos2 == " " and pos3 == " ":
+                    playersheet.update_cell(position[0],
+                                            position[1], 'o')
+                    playersheet.update_cell(position[0],
+                                            position[1]+1, 'o')
+                    playersheet.update_cell(position[0],
+                                            position[1]+2, 'o')
+                    init_ships -= 1
+                else:
+                    print("You have allready positioned a ship here",
+                          "Try another one")
+        except gspread.exceptions.APIError:
+            print("Ship ends up outside the playing field, try again.")
+
     return playersheet
 
 
@@ -197,15 +242,19 @@ def player_guess(enemysheet):
 
 def game(total_ships, enemysheet, playersheet):
     """
-    This function compares the values from total ships and reduces
+    runs the core mechanic of the game, compares values
+    and if the guess function returns
+    a true it deducts one from remaining ships on
     """
-    game_enemy_ships = total_ships
-    game_player_ships = total_ships
+    game_enemy_ships = total_ships*3
+    game_player_ships = total_ships*3
     player_guess_val = False
     enemy_guess_val = False
     while True:
         if game_player_ships == 0:
-            print("You lost!")
+            print("#############")
+            print("# You lost! #")
+            print("#############")
             break
         else:
             table(enemysheet, True)
@@ -214,7 +263,9 @@ def game(total_ships, enemysheet, playersheet):
                 game_enemy_ships -= 1
                 player_guess_val = False
         if game_enemy_ships == 0:
-            print("You won!")
+            print("#############")
+            print("# You win!  #")
+            print("#############")
             break
         else:
             table(playersheet, False)
