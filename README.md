@@ -59,7 +59,9 @@ as a user I want to play a game of logic.
 
   * Ship could be overwritten by enemy on his sheet resulting in a loss since you cant destroy the amount of predetermed ships
 
-  * heroku + CI console template does not like newlines(\n) , putting new lines into seperate Print statements works.
+  * heroku + CI console template does not like newlines(\n) with inputs , putting new lines into seperate Print statements works.
+
+  * Horisontal and vertical input does not work.
 
 # Deployment
    ## via gitpod

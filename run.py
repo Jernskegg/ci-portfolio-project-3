@@ -91,7 +91,7 @@ def ship_rotation():
     """
     while True:
         print("Do you want to place the ship vertically or horizontally?")
-        vertical = (input("").lower().strip())
+        vertical = (input("").lower())[:1]
         if vertical == "v":
             return True
         if vertical == "h":
