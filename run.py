@@ -321,6 +321,24 @@ def main():
     """
     Main part of the application
     """
+    print("""##########################################################
+#         Starting Jerns battleships                     #
+#                                                        #
+# Instructions.                                          #
+# 1. You get to place your ships                         #
+#   * place row (1-10)                                   #
+#   * place collumn (1-10)                               #
+#   * choose if your ship is vertical or horizontal      #
+#                                                        #
+# 2. you get to make a guess on enemies ship             #
+#   * Row (1-10)                                         #
+#   * collumn (1-10)                                     #
+#                                                        #
+# 3. The first one to hit all 3 boats wins the game      #
+#                                                        #
+#      # = ship hit, x = hit previously, o = boat        #
+#                                                        #
+##########################################################""")
     total_ships = 3
     playersheet = initiate_player(total_ships)
     enemysheet = enemy_ship(total_ships)
