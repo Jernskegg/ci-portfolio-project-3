@@ -157,7 +157,6 @@ def enemy_ship(total_ships):
     while number_of_ships != 0:
         position = [random.randint(1, 10), random.randint(1, 10)]
         vertical = random.choice([True, False])
-        print(vertical)
         try:
             if vertical is True:
                 pos1 = enemysheet.cell(position[0],
@@ -194,7 +193,7 @@ def enemy_ship(total_ships):
                 else:
                     continue
         except gspread.exceptions.APIError:
-            print("Ship ends up outside the playing field, try again.")
+            pass
     return enemysheet
 
 
@@ -238,9 +237,9 @@ def enemy_guess(playersheet):
         if guess_try == "o":
             print(f"enemy guessed {computer_guess}")
             print("ENEMY HIT!")
-            playersheet.update_cell(computer_guess[0], computer_guess[1], 'x')
+            playersheet.update_cell(computer_guess[0], computer_guess[1], '#')
             return True
-        if guess_try == "x":
+        if guess_try == "x" or guess_try == "#":
             continue
         print(f"enemy guessed {computer_guess}")
         print("ENEMY MISSED!")
@@ -264,9 +263,9 @@ def player_guess(enemysheet):
                                     user_guess[1]).value
         if guess_try == "o":
             print("YOU HIT!")
-            enemysheet.update_cell(user_guess[0], user_guess[1], 'x')
+            enemysheet.update_cell(user_guess[0], user_guess[1], '#')
             return True
-        if guess_try == "x":
+        if guess_try == "x" or guess_try == "#":
             print("You allready fired upon this coordinates, try another one.")
             continue
         print("YOU MISS!")
