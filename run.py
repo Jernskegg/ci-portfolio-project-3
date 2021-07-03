@@ -201,28 +201,27 @@ def game(total_ships, enemysheet, playersheet):
     """
     game_enemy_ships = total_ships
     game_player_ships = total_ships
-    game_over = False
     player_guess_val = False
     enemy_guess_val = False
-    while game_over is False:
-        if player_guess_val is True:
-            game_enemy_ships -= 1
-            player_guess_val = False
-        if enemy_guess_val is True:
-            game_player_ships -= 1
-            enemy_guess_val = False
-        if game_enemy_ships == 0:
-            print("You win!")
-            game_over = True
-            break
-        table(enemysheet, True)
-        player_guess_val = player_guess(enemysheet)
+    while True:
         if game_player_ships == 0:
-            print("You Lose")
-            game_over = True
+            print("You lost!")
             break
-        table(playersheet, False)
-        enemy_guess_val = enemy_guess(playersheet)
+        else:
+            table(enemysheet, True)
+            player_guess_val = player_guess(enemysheet)
+            if player_guess_val is True:
+                game_enemy_ships -= 1
+                player_guess_val = False
+        if game_enemy_ships == 0:
+            print("You won!")
+            break
+        else:
+            table(playersheet, False)
+            enemy_guess_val = enemy_guess(playersheet)
+            if enemy_guess_val is True:
+                game_player_ships -= 1
+                enemy_guess_val = False
 
 
 def exit_game(sheet1, sheet2):
