@@ -82,25 +82,9 @@ def table(sheet, hidden):
         print()
 
 
-def enemy_ship(total_ships):
-    """
-    This initilizes the poisitioning of the computer controlled player
-    """
-    enemysheet = battle_sheet()
-    number_of_ships = 0
-    while number_of_ships < total_ships:
-        enemy_ship_row = random.randint(1, 10)
-        enemy_ship_col = random.randint(1, 10)
-        enemy_ship_pos = [enemy_ship_row, enemy_ship_col]
-        enemysheet.update_cell(enemy_ship_pos[0],
-                               enemy_ship_pos[1], 'o')
-        number_of_ships += 1
-    return enemysheet
-
-
 def ship_rotation():
     while True:
-        print("Vertically or horizontally?")
+        print("Do you want to place the ship vertically or horizontally?")
         vertical = (input("").lower().strip())
         if vertical == "v":
             return True
@@ -119,8 +103,8 @@ def initiate_player(total_ships):
     playersheet = battle_sheet()
     while init_ships != 0:
         table(playersheet, False)
-        position = shoot("placement")
         vertical = ship_rotation()
+        position = shoot("placement")
         try:
             if vertical is True:
                 pos1 = playersheet.cell(position[0],
@@ -162,6 +146,56 @@ def initiate_player(total_ships):
             print("Ship ends up outside the playing field, try again.")
 
     return playersheet
+
+
+def enemy_ship(total_ships):
+    """
+    This initilizes the poisitioning of the computer controlled player
+    """
+    enemysheet = battle_sheet()
+    number_of_ships = total_ships
+    while number_of_ships != 0:
+        position = [random.randint(1, 10), random.randint(1, 10)]
+        vertical = random.choice([True, False])
+        print(vertical)
+        try:
+            if vertical is True:
+                pos1 = enemysheet.cell(position[0],
+                                       position[1]).value
+                pos2 = enemysheet.cell(position[0]+1,
+                                       position[1]).value
+                pos3 = enemysheet.cell(position[0]+2,
+                                       position[1]).value
+                if pos1 == " " and pos2 == " " and pos3 == " ":
+                    enemysheet.update_cell(position[0],
+                                           position[1], 'o')
+                    enemysheet.update_cell(position[0]+1,
+                                           position[1], 'o')
+                    enemysheet.update_cell(position[0]+2,
+                                           position[1], 'o')
+                    number_of_ships -= 1
+                else:
+                    continue
+            else:
+                pos1 = enemysheet.cell(position[0],
+                                       position[1]).value
+                pos2 = enemysheet.cell(position[0],
+                                       position[1]+1).value
+                pos3 = enemysheet.cell(position[0],
+                                       position[1]+2).value
+                if pos1 == " " and pos2 == " " and pos3 == " ":
+                    enemysheet.update_cell(position[0],
+                                           position[1], 'o')
+                    enemysheet.update_cell(position[0],
+                                           position[1]+1, 'o')
+                    enemysheet.update_cell(position[0],
+                                           position[1]+2, 'o')
+                    number_of_ships -= 1
+                else:
+                    continue
+        except gspread.exceptions.APIError:
+            print("Ship ends up outside the playing field, try again.")
+    return enemysheet
 
 
 def shoot(text):
