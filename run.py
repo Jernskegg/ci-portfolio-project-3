@@ -107,7 +107,7 @@ def initiate_player(total_ships):
     playersheet = battle_sheet()
     while init_ships != 0:
         table(playersheet, False)
-        position = shoot("placement")
+        position = numeric_input("placement")
         vertical = ship_rotation()
         try:
             if vertical is True:
@@ -202,7 +202,7 @@ def enemy_ship(total_ships):
     return enemysheet
 
 
-def shoot(text):
+def numeric_input(text):
     """
     Lets the user input a value and validates it and constrains it to 1-10
     """
@@ -260,7 +260,7 @@ def player_guess(enemysheet):
     """
     print("\nIt's your turn")
     while True:
-        user_guess = shoot("guess")
+        user_guess = numeric_input("guess")
         print(user_guess)
         guess_try = enemysheet.cell(user_guess[0],
                                     user_guess[1]).value
