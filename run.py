@@ -1,5 +1,5 @@
 """
-Import
+Import plugins
 """
 import sys
 import random
@@ -39,9 +39,11 @@ def battle_sheet():
             battlesheet = SHEET.duplicate_sheet(0,
                                                 new_sheet_name=str(random.
                                                                    randint(1,
-                                                                           10)
+                                                                           100)
                                                                    )
                                                 )
+            report_sheet = SHEET.worksheet("TIMEOUT")
+            report_sheet.append_row([str(battlesheet)])
             break
         except gspread.exceptions.APIError:
             if tries > 1:
@@ -65,10 +67,11 @@ def table(sheet, hidden):
         return text
     tablesheet = sheet.get_all_values()
     if hidden is True:
-        for step_1, x in enumerate(tablesheet):
-            for step_2, a in enumerate(x):
-                if "o" in a:
-                    tablesheet[step_1][step_2] = a.replace("o", " ")
+        for step_1, free_space_row in enumerate(tablesheet):
+            for step_2, free_space_col in enumerate(free_space_row):
+                if "o" in free_space_col:
+                    tablesheet[step_1][step_2] = free_space_col.replace("o",
+                                                                        " ")
 
     row_number = 1
     print("0__|_1_|_2_|_3_|_4_|_5_|_6_|_7_|_8_|_9_|_10|")
@@ -83,16 +86,17 @@ def table(sheet, hidden):
 
 
 def ship_rotation():
+    """
+    Lets the user input if they want there ship to be vertical or hozintal
+    """
     while True:
         print("Do you want to place the ship vertically or horizontally?")
         vertical = (input("").lower().strip())
         if vertical == "v":
             return True
         if vertical == "h":
-            return False
-        else:
-            print("Invalid input: please enter vertical or horisontal (v/h)")
-            continue
+            break
+        print("Invalid input: please enter vertical or horisontal (v/h)")
 
 
 def initiate_player(total_ships):
@@ -103,8 +107,8 @@ def initiate_player(total_ships):
     playersheet = battle_sheet()
     while init_ships != 0:
         table(playersheet, False)
-        vertical = ship_rotation()
         position = shoot("placement")
+        vertical = ship_rotation()
         try:
             if vertical is True:
                 pos1 = playersheet.cell(position[0],
@@ -143,15 +147,16 @@ def initiate_player(total_ships):
                     print("You have allready positioned a ship here",
                           "Try another one")
         except gspread.exceptions.APIError:
-            print("Ship ends up outside the playing field, try again.")
+            print("Ship is outside the playing field, try again.")
 
     return playersheet
 
 
 def enemy_ship(total_ships):
     """
-    This initilizes the poisitioning of the computer controlled player
+    initilizes the poisitioning of the computer controlled player
     """
+    print("Generation Enemy ships position")
     enemysheet = battle_sheet()
     number_of_ships = total_ships
     while number_of_ships != 0:
@@ -199,9 +204,7 @@ def enemy_ship(total_ships):
 
 def shoot(text):
     """
-    This function allows the user to make a guess and validates it to confine
-    it to a number between 1 to 10,
-    and returns an error to the user, So that the user can try again.
+    Lets the user input a value and validates it and constrains it to 1-10
     """
     while True:
         try:
@@ -239,7 +242,7 @@ def enemy_guess(playersheet):
             print("ENEMY HIT!")
             playersheet.update_cell(computer_guess[0], computer_guess[1], '#')
             return True
-        if guess_try == "x" or guess_try == "#":
+        if guess_try in ("x", "#"):
             continue
         print(f"enemy guessed {computer_guess}")
         print("ENEMY MISSED!")
@@ -265,7 +268,7 @@ def player_guess(enemysheet):
             print("YOU HIT!")
             enemysheet.update_cell(user_guess[0], user_guess[1], '#')
             return True
-        if guess_try == "x" or guess_try == "#":
+        if guess_try in ("x", "#"):
             print("You allready fired upon this coordinates, try another one.")
             continue
         print("YOU MISS!")
@@ -277,7 +280,7 @@ def game(total_ships, enemysheet, playersheet):
     """
     runs the core mechanic of the game, compares values
     and if the guess function returns
-    a true it deducts one from remaining ships on
+    a true it deducts one from remaining ships for repsective party.
     """
     game_enemy_ships = total_ships*3
     game_player_ships = total_ships*3
@@ -289,23 +292,21 @@ def game(total_ships, enemysheet, playersheet):
             print("# You lost! #")
             print("#############")
             break
-        else:
-            table(enemysheet, True)
-            player_guess_val = player_guess(enemysheet)
-            if player_guess_val is True:
-                game_enemy_ships -= 1
-                player_guess_val = False
+        table(enemysheet, True)
+        player_guess_val = player_guess(enemysheet)
+        if player_guess_val is True:
+            game_enemy_ships -= 1
+            player_guess_val = False
         if game_enemy_ships == 0:
             print("#############")
             print("# You win!  #")
             print("#############")
             break
-        else:
-            table(playersheet, False)
-            enemy_guess_val = enemy_guess(playersheet)
-            if enemy_guess_val is True:
-                game_player_ships -= 1
-                enemy_guess_val = False
+        enemy_guess_val = enemy_guess(playersheet)
+        table(playersheet, False)
+        if enemy_guess_val is True:
+            game_player_ships -= 1
+            enemy_guess_val = False
 
 
 def exit_game(sheet1, sheet2):
